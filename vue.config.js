@@ -1,5 +1,6 @@
-import * as merge from 'webpack-merge'
-import * as tsImportPluginFactory from 'ts-import-plugin'
+const merge = require('webpack-merge')
+const tsImportPluginFactory = require('ts-import-plugin')
+
 module.exports = {
   lintOnSave: true,
   chainWebpack: config => {
