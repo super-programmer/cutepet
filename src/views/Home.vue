@@ -1,6 +1,6 @@
 <template>
     <div>
-      index
+      <van-button type="primary">默认按钮</van-button>
     </div>
 </template>
 
