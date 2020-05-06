@@ -25,6 +25,9 @@
         </div>
       </van-list>
     </article>
+    <!--  登录弹框  -->
+    <van-dialog v-model="showLogin" title="登录" show-cancel-button>
+    </van-dialog>
   </article>
 </template>
 
@@ -33,8 +36,9 @@ export default {
   name: 'Index',
   data () {
     return {
-      navTitle: '宠小宠',
+      navTitle: '宠宠物',
       homeMenu: 0,
+      showLogin: false,
       Menuoptions: [
         { text: '首页', value: 0 },
         { text: '我的', value: 1 }
@@ -53,7 +57,25 @@ export default {
       finished: false
     }
   },
+  computed: {
+    userId () {
+      return this.$store.getters.getUser
+    }
+  },
+  watch: {
+    homeMenu(value){
+      if(value && !this.userId){
+        this.showLogin()
+      }
+    }
+  },
   methods: {
+    showLogin () {
+      this.showLogin = true;
+    },
+    hideLogin () {
+      this.showLogin = false;
+    },
     onLoad () {
       // 异步更新数据
       // setTimeout 仅做示例，真实场景中一般为 ajax 请求

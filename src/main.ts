@@ -10,13 +10,15 @@ import {
   Icon,
   DropdownMenu,
   DropdownItem,
-  List
+  List,
+  Dialog
 } from 'vant'
 Vue.use(Button)
 Vue.use(NavBar)
 Vue.use(Icon)
 Vue.use(DropdownMenu)
 Vue.use(DropdownItem)
+Vue.use(Dialog)
 Vue.use(List)
 Vue.config.productionTip = false
 
