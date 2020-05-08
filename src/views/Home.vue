@@ -99,7 +99,7 @@ export default {
     },
     goToDetail () {
       this.$router.push({
-        path:'/detail'
+        path: '/detail'
       })
     }
   }
