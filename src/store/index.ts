@@ -5,7 +5,9 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    user:{}
+    user:{
+      userId:null
+    }
   },
   mutations: {
     setUser(state,user){
@@ -18,7 +20,8 @@ export default new Vuex.Store({
     }
   },
   getters: {
-    getUser: (state) =>{return state.user}
+    getUser: (state) =>{return state.user},
+    getUserId: (state) =>{return state.user.userId}
     },
   modules: {
   }

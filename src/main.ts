@@ -11,7 +11,9 @@ import {
   DropdownMenu,
   DropdownItem,
   List,
-  Dialog
+  Dialog,
+  Field,
+  CellGroup,
 } from 'vant'
 Vue.use(Button)
 Vue.use(NavBar)
@@ -20,6 +22,8 @@ Vue.use(DropdownMenu)
 Vue.use(DropdownItem)
 Vue.use(Dialog)
 Vue.use(List)
+Vue.use(Field)
+Vue.use(CellGroup)
 Vue.config.productionTip = false
 
 new Vue({

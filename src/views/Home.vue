@@ -17,8 +17,8 @@
         finished-text="没有更多了"
         @load="onLoad"
       >
-        <div v-for="item in list" :key="item" class="m-list__item">
-          <img :src="item.cover" :alt="cutePet" class="m-list__cover" />
+        <div v-for="(item, index) in list" :key="index" class="m-list__item" @click="goToDetail(item)">
+          <img :src="item.cover" class="m-list__cover" />
           <section class="m-list__con">
             {{ item.title }}
           </section>
@@ -26,7 +26,15 @@
       </van-list>
     </article>
     <!--  登录弹框  -->
-    <van-dialog v-model="showLogin" title="登录" show-cancel-button>
+    <van-dialog v-model="showLoginDialog" title="登录" confirmButtonText="登录">
+      <van-cell-group>
+        <van-field v-model="loginForm.phone" type="tel" placeholder="请输入手机号" />
+        <van-field v-model="loginForm.verCode" placeholder="请输入验证码">
+          <template #button>
+            <van-button size="small" type="primary">发送验证码</van-button>
+          </template>
+        </van-field>
+      </van-cell-group>
     </van-dialog>
   </article>
 </template>
@@ -38,11 +46,15 @@ export default {
     return {
       navTitle: '宠宠物',
       homeMenu: 0,
-      showLogin: false,
+      showLoginDialog: false,
       Menuoptions: [
         { text: '首页', value: 0 },
         { text: '我的', value: 1 }
       ],
+      loginForm: {
+        phone: null,
+        verCode: null
+      },
       list: [
         {
           title: '首发| 瑞派宠物获得玛氏C轮战略投资，投后估值达70亿元',
@@ -59,22 +71,22 @@ export default {
   },
   computed: {
     userId () {
-      return this.$store.getters.getUser
+      return this.$store.getters.getUserId
     }
   },
   watch: {
-    homeMenu(value){
-      if(value && !this.userId){
+    homeMenu (value) {
+      if (value && !this.userId) {
         this.showLogin()
       }
     }
   },
   methods: {
     showLogin () {
-      this.showLogin = true;
+      this.showLoginDialog = true
     },
     hideLogin () {
-      this.showLogin = false;
+      this.showLoginDialog = false
     },
     onLoad () {
       // 异步更新数据
@@ -84,6 +96,11 @@ export default {
         this.loading = false
         this.finished = true
       }, 1000)
+    },
+    goToDetail () {
+      this.$router.push({
+        path:'/detail'
+      })
     }
   }
 }
