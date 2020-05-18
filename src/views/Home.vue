@@ -6,7 +6,7 @@
       </template>
       <template #right>
         <van-dropdown-menu>
-          <van-dropdown-item v-model="homeMenu" :options="Menuoptions" />
+          <van-dropdown-item v-model="homeMenu" :options="menuOptions" />
         </van-dropdown-menu>
       </template>
     </van-nav-bar>
@@ -26,7 +26,7 @@
       </van-list>
     </article>
     <!--  登录弹框  -->
-    <van-dialog v-model="showLoginDialog" title="登录" confirmButtonText="登录">
+    <van-dialog v-model="showLoginDialog" :title="loginTitle" :confirmButtonText="confirmButtonText">
       <van-cell-group>
         <van-field v-model="loginForm.phone" type="tel" placeholder="请输入手机号" />
         <van-field v-model="loginForm.verCode" placeholder="请输入验证码">
@@ -34,6 +34,14 @@
             <van-button size="small" type="primary">发送验证码</van-button>
           </template>
         </van-field>
+        <section class="m-login-tips">
+          <section class="m-login-tips__con" @click="changeLoginByPwd">
+            {{loginByPwd ? '快捷登录' : '密码登录'}}
+          </section>
+          <section class="m-login-tips__operation">
+            {{loginByPwd ? '忘记密码' : ''}}
+          </section>
+        </section>
       </van-cell-group>
     </van-dialog>
   </article>
@@ -45,9 +53,12 @@ export default {
   data () {
     return {
       navTitle: '宠宠物',
+      loginTitle: '登录',
+      confirmButtonText: '登录',
       homeMenu: 0,
-      showLoginDialog: false,
-      Menuoptions: [
+      loginByPwd: false,
+      showLoginDialog: true,
+      menuOptions: [
         { text: '首页', value: 0 },
         { text: '我的', value: 1 }
       ],
@@ -85,6 +96,9 @@ export default {
     showLogin () {
       this.showLoginDialog = true
     },
+    changeLoginByPwd () {
+      this.loginByPwd = !this.loginByPwd
+    },
     hideLogin () {
       this.showLoginDialog = false
     },
@@ -106,4 +120,19 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+  .m-login-tips{
+    min-height: 50px;
+    line-height: 50px;
+    padding: 0 16px;
+    font-size: 14px;
+  }
+  .m-login-tips__con{
+    float: left;
+    color: #1989fa;
+  }
+  .m-login-tips__operation{
+    float: right;
+    color: #1989fa;
+  }
+</style>
