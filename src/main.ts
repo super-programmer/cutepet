@@ -13,6 +13,7 @@ import {
   List,
   Dialog,
   Field,
+  Form,
   CellGroup,
 } from 'vant'
 Vue.use(Button)
@@ -23,6 +24,7 @@ Vue.use(DropdownItem)
 Vue.use(Dialog)
 Vue.use(List)
 Vue.use(Field)
+Vue.use(Form)
 Vue.use(CellGroup)
 Vue.config.productionTip = false
 

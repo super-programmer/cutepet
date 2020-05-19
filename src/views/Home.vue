@@ -26,23 +26,41 @@
       </van-list>
     </article>
     <!--  登录弹框  -->
-    <van-dialog v-model="showLoginDialog" :title="loginTitle" :confirmButtonText="confirmButtonText">
-      <van-cell-group>
-        <van-field v-model="loginForm.phone" type="tel" placeholder="请输入手机号" />
-        <van-field v-model="loginForm.verCode" placeholder="请输入验证码">
-          <template #button>
-            <van-button size="small" type="primary">发送验证码</van-button>
-          </template>
-        </van-field>
-        <section class="m-login-tips">
-          <section class="m-login-tips__con" @click="changeLoginByPwd">
-            {{loginByPwd ? '快捷登录' : '密码登录'}}
+    <van-dialog v-model="showLoginDialog" :title="loginTitle" :showConfirmButton="false">
+      <van-form>
+        <van-cell-group>
+          <van-field v-model="loginForm.phone"
+                     type="tel"
+                     placeholder="请输入手机号"
+                     name="validator"
+                     :rules="[{ validator, message: '请输入正确的手机号码' }]"/>
+          <van-field v-model="loginForm.password"
+                     placeholder="请输入密码"
+                     v-if="loginByPwd"
+                     name="pswValidator"
+                     :rules="[{ pswValidator, message: '请输入密码' }]"
+                     type="password"></van-field>
+          <van-field v-model="loginForm.verCode" placeholder="请输入验证码" v-else>
+            <template #button v-if="!loginByPwd">
+              <van-button size="small" type="primary" native-type="button">发送验证码</van-button>
+            </template>
+          </van-field>
+          <section class="m-login-tips">
+            <section class="m-login-tips__con" @click="changeLoginByPwd">
+              {{loginByPwd ? '快捷登录' : '密码登录'}}
+            </section>
+            <section class="m-login-tips__operation">
+              {{loginByPwd ? '忘记密码' : ''}}
+            </section>
           </section>
-          <section class="m-login-tips__operation">
-            {{loginByPwd ? '忘记密码' : ''}}
-          </section>
-        </section>
-      </van-cell-group>
+          <div style="margin: 16px;">
+            <van-button round block type="info" native-type="submit">
+              登录
+            </van-button>
+          </div>
+        </van-cell-group>
+      </van-form>
+
     </van-dialog>
   </article>
 </template>
@@ -64,7 +82,8 @@ export default {
       ],
       loginForm: {
         phone: null,
-        verCode: null
+        verCode: null,
+        password: null
       },
       list: [
         {
@@ -99,6 +118,12 @@ export default {
     changeLoginByPwd () {
       this.loginByPwd = !this.loginByPwd
     },
+    validator (val) {
+      return /^1[3456789]\d{9}$/.test(val)
+    },
+    pswValidator (val) {
+      return val.length
+    },
     hideLogin () {
       this.showLoginDialog = false
     },
@@ -125,14 +150,14 @@ export default {
     min-height: 50px;
     line-height: 50px;
     padding: 0 16px;
-    font-size: 14px;
+    font-size: 12px;
   }
   .m-login-tips__con{
     float: left;
-    color: #1989fa;
+    color: #999;
   }
   .m-login-tips__operation{
     float: right;
-    color: #1989fa;
+    color: #999;
   }
 </style>
