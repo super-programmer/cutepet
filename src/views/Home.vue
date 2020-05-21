@@ -26,7 +26,7 @@
       </van-list>
     </article>
     <!--  登录弹框  -->
-    <van-dialog v-model="showLoginDialog" :title="loginTitle" :showConfirmButton="false">
+    <van-dialog v-model="showLoginDialog" :title="loginTitle" :showConfirmButton="false" :closeOnClickOverlay="true">
       <van-form>
         <van-cell-group>
           <van-field v-model="loginForm.phone"
@@ -38,11 +38,15 @@
                      placeholder="请输入密码"
                      v-if="loginByPwd"
                      name="pswValidator"
-                     :rules="[{ pswValidator, message: '请输入密码' }]"
+                     :rules="[{ validator:pswValidator, message: '请输入密码' }]"
                      type="password"></van-field>
-          <van-field v-model="loginForm.verCode" placeholder="请输入验证码" v-else>
+          <van-field v-model="loginForm.verCode"
+                     name="pswValidator"
+                     :rules="[{ validator:pswValidator, message: '请输入验证' }]"
+                     placeholder="请输入验证码" v-else>
             <template #button v-if="!loginByPwd">
-              <van-button size="small" type="primary" native-type="button">发送验证码</van-button>
+              <van-button size="small" type="primary" native-type="button" @click="getVerCode" v-if="verCount <= 0">发送验证码</van-button>
+              <van-button size="small" type="default" v-else>{{verCount}}秒后重新获取</van-button>
             </template>
           </van-field>
           <section class="m-login-tips">
@@ -73,9 +77,11 @@ export default {
       navTitle: '宠宠物',
       loginTitle: '登录',
       confirmButtonText: '登录',
+      verTimer: null,
+      verCount: 0,
       homeMenu: 0,
       loginByPwd: false,
-      showLoginDialog: true,
+      showLoginDialog: false,
       menuOptions: [
         { text: '首页', value: 0 },
         { text: '我的', value: 1 }
@@ -112,17 +118,31 @@ export default {
     }
   },
   methods: {
+    getVerCode () {
+      if (!this.validator(this.loginForm.phone)) return
+      this.verCount = 60
+      this.verTimer = setInterval(() => {
+        if (this.verCount) {
+          this.verCount--
+        } else {
+          clearInterval(this.verTimer)
+        }
+      }, 1000)
+    },
     showLogin () {
       this.showLoginDialog = true
     },
     changeLoginByPwd () {
       this.loginByPwd = !this.loginByPwd
+      clearInterval(this.verTimer)
+      this.verCount = 0
+      this.verTimer = null
     },
     validator (val) {
       return /^1[3456789]\d{9}$/.test(val)
     },
     pswValidator (val) {
-      return val.length
+      return !!val
     },
     hideLogin () {
       this.showLoginDialog = false
