@@ -1,4 +1,6 @@
-import Login from '../views/Login';
+import Login from './login'
+import Main from './main'
 export default {
-  ...Login
+  ...Login,
+  ...Main
 }

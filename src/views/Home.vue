@@ -70,6 +70,7 @@
 </template>
 
 <script>
+import Api from '../api/index'
 export default {
   name: 'Index',
   data () {
@@ -117,7 +118,16 @@ export default {
       }
     }
   },
+  mounted () {
+    this.initData()
+  },
   methods: {
+    initData () {
+      Api.getList().then(res => {
+        this.list = res.data
+        console.log(res)
+      })
+    },
     getVerCode () {
       if (!this.validator(this.loginForm.phone)) return
       this.verCount = 60

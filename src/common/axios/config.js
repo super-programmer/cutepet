@@ -1,12 +1,13 @@
 /* eslint-disable no-param-reassign */
 import axios from 'axios'
-axios.defaults.baseURL = 'https://api.kpg123.com'
+// axios.defaults.baseURL = 'https://api.kpg123.com'
+axios.defaults.baseURL = 'http://192.168.43.129'
 axios.defaults.headers.post['Content-Type'] = 'application/json'
 
 const Axios = axios.create({
   timeout: 10000,
   responseType: 'json',
-  withCredentials: true
+  withCredentials: false
 })
 
 Axios.interceptors.request.use(
