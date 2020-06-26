@@ -4,8 +4,8 @@ import axios from '../common/axios/config'
 /**
  * 获取验证码
  */
-function getValidate (definedId, mobile) {
-  return axios.get(`/base/captcha/apply/${definedId}?mobile=${mobile}`)
+function getValidate (phoneNum) {
+  return axios.get('/sendSms',{ params: { phoneNum } })
 }
 
 /**
@@ -19,12 +19,27 @@ function checkValidate (id, code) {
  * 登录（sms 短信验证登录、openid 社交凭证登录）
  */
 function login (params) {
-  return axios.post('/auth/oauth/token', params, {
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
-    }
-  })
+  return axios.post('/login', params)
 }
+/*
+* 快捷登录
+* */
+function quickLogin (params) {
+  return axios.post('/quickLogin', params)
+}
+/*
+* 注册
+* */
+function register (params) {
+  return axios.post('/register', params)
+}
+// function login (params) {
+//   return axios.post('/login', params, {
+//     // headers: {
+//     //   'Content-Type': 'application/x-www-form-urlencoded'
+//     // }
+//   })
+// }
 
 /**
  * 刷新登录
@@ -76,5 +91,7 @@ export default {
   getValidate,
   checkValidate,
   login,
+  quickLogin,
+  register,
   refreshToken
 }

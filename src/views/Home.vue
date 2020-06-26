@@ -3,11 +3,14 @@
     <van-nav-bar :title="navTitle">
       <template #left>
         <van-icon name="fire" />
-      </template>
-      <template #right>
         <van-dropdown-menu>
           <van-dropdown-item v-model="homeMenu" :options="menuOptions" />
         </van-dropdown-menu>
+      </template>
+      <template #right>
+        <article class="m-hd__operation">
+          <section @click="showLogin" class="m-hd__operation-item m-hd__operation-item--login">登录</section><section @click="showRegister(null)" class="m-hd__operation-item">注册</section>
+        </article>
       </template>
     </van-nav-bar>
     <article class="m-bd">
@@ -29,23 +32,23 @@
     <van-dialog v-model="showLoginDialog" :title="loginTitle" :showConfirmButton="false" :closeOnClickOverlay="true">
       <van-form>
         <van-cell-group>
-          <van-field v-model="loginForm.phone"
+          <van-field v-model="loginForm.phoneNum"
                      type="tel"
                      placeholder="请输入手机号"
                      name="validator"
                      :rules="[{ validator, message: '请输入正确的手机号码' }]"/>
-          <van-field v-model="loginForm.password"
+          <van-field v-model="loginForm.pwd"
                      placeholder="请输入密码"
                      v-if="loginByPwd"
                      name="pswValidator"
                      :rules="[{ validator:pswValidator, message: '请输入密码' }]"
                      type="password"></van-field>
-          <van-field v-model="loginForm.verCode"
+          <van-field v-model="loginForm.verifyCode"
                      name="pswValidator"
                      :rules="[{ validator:pswValidator, message: '请输入验证' }]"
                      placeholder="请输入验证码" v-else>
             <template #button v-if="!loginByPwd">
-              <van-button size="small" type="primary" native-type="button" @click="getVerCode" v-if="verCount <= 0">发送验证码</van-button>
+              <van-button size="small" type="primary" native-type="button" @click="getVerCode(loginForm)" v-if="verCount <= 0">发送验证码</van-button>
               <van-button size="small" type="default" v-else>{{verCount}}秒后重新获取</van-button>
             </template>
           </van-field>
@@ -58,8 +61,45 @@
             </section>
           </section>
           <div style="margin: 16px;">
-            <van-button round block type="info" native-type="submit">
+            <van-button round block type="info" native-type="submit" @click="loginSubmit">
               登录
+            </van-button>
+          </div>
+        </van-cell-group>
+      </van-form>
+
+    </van-dialog>
+    <!--  注册弹框  -->
+    <van-dialog v-model="showRegisterDialog" title="注册" :showConfirmButton="false" :closeOnClickOverlay="true">
+      <van-form>
+        <van-cell-group>
+          <van-field v-model="registerForm.phoneNum"
+                     type="tel"
+                     placeholder="请输入手机号"
+                     name="validator"
+                     :rules="[{ validator, message: '请输入正确的手机号码' }]"/>
+          <van-field v-model="registerForm.verifyCode"
+                     name="pswValidator"
+                     :rules="[{ validator:pswValidator, message: '请输入验证' }]"
+                     placeholder="请输入验证码">
+            <template #button>
+              <van-button size="small" type="primary" native-type="button" @click="getVerCode(registerForm)" v-if="verCount <= 0">发送验证码</van-button>
+              <van-button size="small" type="default" v-else>{{verCount}}秒后重新获取</van-button>
+            </template>
+          </van-field>
+          <van-field v-model="registerForm.pwd"
+                     placeholder="请输入密码"
+                     name="pswValidator"
+                     :rules="[{ validator:pswValidator, message: '请输入密码' }]"
+                     type="password"></van-field>
+          <van-field v-model="registerForm.confirmPwd"
+                     placeholder="请再次输入密码"
+                     name="pswValidator"
+                     :rules="[{ validator:pswValidator, message: '请再次输入密码' }]"
+                     type="password"></van-field>
+          <div style="margin: 16px;">
+            <van-button round block type="info" native-type="submit" @click="registerSubmit">
+              注册
             </van-button>
           </div>
         </van-cell-group>
@@ -83,15 +123,22 @@ export default {
       homeMenu: 0,
       loginByPwd: false,
       showLoginDialog: false,
+      showRegisterDialog: false,
       menuOptions: [
         { text: '首页', value: 0 },
         { text: '我的', value: 1 }
       ],
+      registerForm: {
+        phoneNum: null,
+        verifyCode: null,
+        pwd: null, // 密码
+        confirmPwd: null// 确认密码
+      }, // 注册form
       loginForm: {
-        phone: null,
-        verCode: null,
-        password: null
-      },
+        phoneNum: null,
+        verifyCode: null,
+        pwd: null
+      }, // 登录form
       list: [
         {
           title: '首发| 瑞派宠物获得玛氏C轮战略投资，投后估值达70亿元',
@@ -113,9 +160,9 @@ export default {
   },
   watch: {
     homeMenu (value) {
-      if (value && !this.userId) {
-        this.showLogin()
-      }
+      // if (value && !this.userId) {
+      //   this.showLogin()
+      // }
     }
   },
   mounted () {
@@ -128,9 +175,14 @@ export default {
         console.log(res)
       })
     },
-    getVerCode () {
-      if (!this.validator(this.loginForm.phone)) return
+    getVerCode (form) {
+      if (!this.validator(form.phoneNum)) return
       this.verCount = 60
+      Api.getValidate(form.phoneNum).then(res => {
+        if (res && res.code === 0) {
+          this.$toast('获取验证码成功')
+        }
+      })
       this.verTimer = setInterval(() => {
         if (this.verCount) {
           this.verCount--
@@ -141,6 +193,12 @@ export default {
     },
     showLogin () {
       this.showLoginDialog = true
+      this.showRegisterDialog = false
+    },
+    showRegister (phoneNum) {
+      this.showLoginDialog = false
+      this.showRegisterDialog = true
+      this.registerForm.phoneNum = phoneNum
     },
     changeLoginByPwd () {
       this.loginByPwd = !this.loginByPwd
@@ -165,6 +223,50 @@ export default {
         this.loading = false
         this.finished = true
       }, 1000)
+    },
+    // 登录
+    loginSubmit () {
+      if (this.loginByPwd) {
+        // 密码登录
+        Api.login(this.loginForm).then(res => {
+          if (res.code === 0) {
+            clearInterval(this.verTimer)
+            this.$toast('登录成功')
+            this.showLoginDialog = false
+            localStorage.accessToken = res.token
+          }
+        }).catch(err => {
+          if (err.errCode === -19) {
+            this.showRegister(this.loginForm.phoneNum)
+          }
+        })
+      } else {
+        // 快捷登录
+        Api.quickLogin(this.loginForm).then(res => {
+          if (res.code === 0) {
+            clearInterval(this.verTimer)
+            this.$toast('登录成功')
+            this.showLoginDialog = false
+            localStorage.accessToken = res.token
+          }
+        }).catch(err => {
+          if (err.errCode === -19) {
+            this.showRegister(this.loginForm.phoneNum)
+          }
+        })
+      }
+    },
+    // 注册
+    registerSubmit () {
+      Api.register(this.registerForm).then(res => {
+        if (res.code === 0) {
+          clearInterval(this.verTimer)
+          this.$toast('注册成功请登录')
+          this.loginByPwd = true
+          this.showRegisterDialog = false
+          this.showLoginDialog = true
+        }
+      })
     },
     goToDetail () {
       this.$router.push({

@@ -1,7 +1,8 @@
 /* eslint-disable no-param-reassign */
 import axios from 'axios'
 // axios.defaults.baseURL = 'https://api.kpg123.com'
-axios.defaults.baseURL = 'http://192.168.43.129'
+import { Toast } from 'vant'
+axios.defaults.baseURL = 'http://68e76c7b.cpolar.io'
 axios.defaults.headers.post['Content-Type'] = 'application/json'
 
 const Axios = axios.create({
@@ -14,7 +15,7 @@ Axios.interceptors.request.use(
   config => {
     if (
       window.localStorage.accessToken &&
-      window.localStorage.accessToken != 'null' &&
+      window.localStorage.accessToken !== 'null' &&
       !config.headers['No-Need-Token']
     ) {
       const $accessToken = window.localStorage.accessToken
@@ -26,7 +27,18 @@ Axios.interceptors.request.use(
 )
 
 Axios.interceptors.response.use(
-  res => res.data,
+  res => {
+    if (!res) {
+      Toast('网络异常')
+    } else if (res.data.errCode) {
+      Toast({
+        message: res.data.msg
+      })
+      return Promise.reject(res.data)
+    } else {
+      return Promise.resolve(res.data)
+    }
+  },
   error => {
     return Promise.reject(error)
   }
