@@ -8,7 +8,7 @@
         </van-dropdown-menu>
       </template>
       <template #right>
-        <article class="m-hd__operation">
+        <article class="m-hd__operation" v-if="!isLogingIng">
           <section @click="showLogin" class="m-hd__operation-item m-hd__operation-item--login">登录</section><section @click="showRegister(null)" class="m-hd__operation-item">注册</section>
         </article>
       </template>
@@ -45,7 +45,7 @@
                      type="password"></van-field>
           <van-field v-model="loginForm.verifyCode"
                      name="pswValidator"
-                     :rules="[{ validator:pswValidator, message: '请输入验证' }]"
+                     :rules="[{ validator:pswValidator, message: '请输入验证码' }]"
                      placeholder="请输入验证码" v-else>
             <template #button v-if="!loginByPwd">
               <van-button size="small" type="primary" native-type="button" @click="getVerCode(loginForm)" v-if="verCount <= 0">发送验证码</van-button>
@@ -67,7 +67,6 @@
           </div>
         </van-cell-group>
       </van-form>
-
     </van-dialog>
     <!--  注册弹框  -->
     <van-dialog v-model="showRegisterDialog" title="注册" :showConfirmButton="false" :closeOnClickOverlay="true">
@@ -156,6 +155,10 @@ export default {
   computed: {
     userId () {
       return this.$store.getters.getUserId
+    },
+    isLogingIng () {
+      const token = localStorage.getItem('token')
+      return token && this.utils.default.tokenIsAvaliable(token)
     }
   },
   watch: {
